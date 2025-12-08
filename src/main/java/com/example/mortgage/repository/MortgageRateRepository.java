@@ -9,4 +9,6 @@ public interface MortgageRateRepository {
 	List<MortgageRate> findAll();
 
 	Optional<MortgageRate> findByMaturityPeriod(Integer maturityPeriod);
+
+	List<Integer> findAllMaturityPeriods();
 }

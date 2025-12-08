@@ -3,13 +3,16 @@ package com.example.mortgage.domain.service.impl;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import com.example.mortgage.api.dto.MortgageCheckRequest;
 import com.example.mortgage.api.dto.MortgageCheckResponse;
+import com.example.mortgage.domain.exception.RuleViolationsException;
+import com.example.mortgage.domain.exception.RuleViolationsException.RuleViolation;
 import com.example.mortgage.domain.model.MortgageRate;
 import com.example.mortgage.domain.service.MortgageService;
 import com.example.mortgage.repository.MortgageRateRepository;
@@ -32,18 +35,30 @@ public class MortgageServiceImpl implements MortgageService {
 
 	@Override
 	public MortgageCheckResponse check(MortgageCheckRequest r) {
-		if (r.loanValue().compareTo(r.income().multiply(BigDecimal.valueOf(4))) > 0) {
-			return new MortgageCheckResponse(false, BigDecimal.ZERO.setScale(2));
-		}
-		if (r.loanValue().compareTo(r.homeValue()) > 0) {
-			return new MortgageCheckResponse(false, BigDecimal.ZERO.setScale(2));
+		List<RuleViolation> violations = new ArrayList<>();
+
+		var rateOpt = repo.findByMaturityPeriod(r.maturityPeriod());
+		if (rateOpt.isEmpty()) {
+			violations.add(new RuleViolation("NO_MATURITY", "Allowed maturity periods are " + allowedValuesFromRepo()));
 		}
 
-		MortgageRate rate = repo.findByMaturityPeriod(r.maturityPeriod())
-				.orElseThrow(() -> new NoSuchElementException("Rate not found for maturity " + r.maturityPeriod()));
+		if (r.loanValue().compareTo(r.income().multiply(BigDecimal.valueOf(4))) > 0) {
+			violations.add(new RuleViolation("LOAN_EXCEEDS_INCOME_MULTIPLE", "Loan exceeds 4x income"));
+		}
+
+		if (r.loanValue().compareTo(r.homeValue()) > 0) {
+			violations.add(new RuleViolation("LOAN_EXCEEDS_HOME_VALUE", "Loan exceeds home value"));
+		}
+
+		if (!violations.isEmpty()) {
+			throw new RuleViolationsException(violations);
+		}
+
+		var rate = rateOpt
+				.orElseThrow(() -> new IllegalStateException("Rate must be present when there are no rule violations"));
 
 		BigDecimal monthly = monthlyPayment(r.loanValue(), rate.interestRate(), r.maturityPeriod());
-		return new MortgageCheckResponse(true, monthly);
+		return MortgageCheckResponse.ok(monthly);
 	}
 
 	private BigDecimal monthlyPayment(BigDecimal principal, BigDecimal annualPercent, Integer years) {
@@ -59,4 +74,9 @@ public class MortgageServiceImpl implements MortgageService {
 		BigDecimal m = principal.multiply(numerator, MC).divide(denominator, MC);
 		return m.setScale(2, RoundingMode.HALF_EVEN);
 	}
+
+	private String allowedValuesFromRepo() {
+		return repo.findAllMaturityPeriods().stream().sorted().map(Object::toString).collect(Collectors.joining(", "));
+	}
+
 }
