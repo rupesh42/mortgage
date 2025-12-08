@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.mortgage.api.dto.MortgageCheckRequest;
 import com.example.mortgage.api.dto.MortgageCheckResponse;
 import com.example.mortgage.api.dto.MortgageRateDto;
-import com.example.mortgage.domain.service.MortgageService;
 import com.example.mortgage.mapper.MortgageMapper;
+import com.example.mortgage.service.MortgageService;
 
 import jakarta.validation.Valid;
 

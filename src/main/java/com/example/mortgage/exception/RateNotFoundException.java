@@ -1,4 +1,4 @@
-package com.example.mortgage.domain.exception;
+package com.example.mortgage.exception;
 
 public class RateNotFoundException extends RuntimeException {
 	private final Integer maturityPeriod;

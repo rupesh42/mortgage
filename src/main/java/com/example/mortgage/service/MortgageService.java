@@ -1,4 +1,4 @@
-package com.example.mortgage.domain.service;
+package com.example.mortgage.service;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.example.mortgage.domain.exception;
+package com.example.mortgage.exception;
 
 import java.util.List;
 import java.util.stream.Collectors;

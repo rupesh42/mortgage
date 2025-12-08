@@ -1,4 +1,4 @@
-package com.example.mortgage.domain.service;
+package com.example.mortgage.service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.mortgage.api.dto.MortgageCheckRequest;
 import com.example.mortgage.api.dto.MortgageCheckResponse;
-import com.example.mortgage.domain.exception.RuleViolationsException;
-import com.example.mortgage.domain.exception.RuleViolationsException.RuleViolation;
 import com.example.mortgage.domain.model.MortgageRate;
+import com.example.mortgage.exception.RuleViolationsException;
+import com.example.mortgage.exception.RuleViolationsException.RuleViolation;
 import com.example.mortgage.repository.MortgageRateRepository;
 
 @Service
