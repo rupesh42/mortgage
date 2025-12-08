@@ -1,4 +1,4 @@
-package com.example.mortgage;
+package com.example.mortgage.api;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
