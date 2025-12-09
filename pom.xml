@@ -13,7 +13,7 @@
 	<artifactId>mortgage</artifactId>
 	<version>1.0.0</version>
 	<name>mortgage</name>
-	<description>Assessment for HCL and ING</description>
+	<description>Assessment</description>
 
 
 	<properties>
